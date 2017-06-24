@@ -4,30 +4,42 @@ import shape
 from sys import exit
 import copy
 import random
+import util
 
 class board(object):
 	def __init__(self, screen, size, W, H):
 		self.W = W
 		self.H = H
+		self.grade = 0
 		self.size = size
 		self.act_shape = []
 		self.START = (100, 100)
 		self.screen = screen
-		self.tile_list = [shape.tile([10,11]), shape.tile([0,0]), shape.tile([3,6])]
+		self.tile_list = []
 		self.ground_flage = False
 		self.can_t_move = False
+		self.text = util.text(size=80)
 
 	def change_pos(self, commond):
 		can_t_move = False
-		able_pos_list, not_act_tile = self.check()
+		not_hit = True
+		unable_pos_list, not_act_tile = self.check()
 		if commond == 'down':
 			self.ground_flage = self.act_shape.fall_down_one_step(self.H)
 		elif (commond =='right') or (commond=='left'):
 			can_t_move = self.act_shape.left_and_right(commond)
-		else:
-			pass
+		elif (commond == 'down_drect'):
+			while True:
+				for act_tile_each in self.act_shape.get_tile():
+					if (act_tile_each.get_pos() in unable_pos_list) or self.ground_flage or can_t_move:
+						self.act_shape.up_one_step()
+						return
+				self.ground_flage = self.act_shape.fall_down_one_step(self.H)
+				print 'a'
+			self.check_row()
+
 		for act_tile_each in self.act_shape.get_tile():
-			if (act_tile_each.get_pos() in able_pos_list) or self.ground_flage or can_t_move:
+			if (act_tile_each.get_pos() in unable_pos_list) or self.ground_flage or can_t_move:
 				if commond == 'down':
 					self.act_shape.up_one_step()
 					self.new()
@@ -41,10 +53,10 @@ class board(object):
 
 	def change_poise(self):
 		provious_act_shape = copy.deepcopy(self.act_shape.get_tile())
-		able_pos_list, not_act_tile = self.check()
+		unable_pos_list, not_act_tile = self.check()
 		can_t_move = self.act_shape.change_poise()
 		for act_tile_each in self.act_shape.get_tile():
-			if (act_tile_each.get_pos() in able_pos_list) or can_t_move:
+			if (act_tile_each.get_pos() in unable_pos_list) or can_t_move:
 				for i in range(len(provious_act_shape)):
 					self.act_shape.get_tile()[i].set_pos_local(provious_act_shape[i].get_pos())
 				return
@@ -68,12 +80,12 @@ class board(object):
 			for i in range(0, self.H):
 				if each_pos[1] == i:
 					count[i] += 1
-					print count[i]
 		for i in range(self.H):
 			if count[i] >= self.W:
 				for tile in list_tile:
 					if tile.get_pos()[1] == i:
 						self.tile_list.remove(tile)
+				self.grade += 1
 		for i in range(self.H):
 			if count[i] >= self.W:
 				for tile in list_tile:
@@ -82,13 +94,13 @@ class board(object):
 	def new(self):
 		shape_num = random.randint(0, 3)
 		if shape_num == 0:
-			self.act_shape = shape.line([5,5], self.W, self.H)
+			self.act_shape = shape.line([5,5], self.W, self.H, self.size)
 		elif shape_num == 1:
-			self.act_shape = shape.rect([5,5], self.W, self.H)
+			self.act_shape = shape.rect([5,5], self.W, self.H, self.size)
 		elif shape_num == 2:
-			self.act_shape = shape.line_with_point_up([5,5], self.W, self.H)
+			self.act_shape = shape.line_with_point_up([5,5], self.W, self.H, self.size)
 		elif shape_num == 3:
-			self.act_shape = shape.line_with_point_down([5,5], self.W, self.H)
+			self.act_shape = shape.line_with_point_down([5,5], self.W, self.H, self.size)
 		self.add_tile()
 
 	def add_tile(self):
@@ -104,7 +116,11 @@ class board(object):
 			rect_list.append(rect)
 		return rect_list
 
-	def draw_rect(self):
+	def draw_rect(self, count):
 		for each_tile in self.tile_list:
+			text_surface_grade = self.text.render(str(self.grade), True, (20, 50, 90))
+			text_surface_time = self.text.render(str(count), True, (20, 50, 90))
+			self.screen.blit(text_surface_grade, (self.W*self.size*1.5, self.H*self.size*(0.382)))
+			self.screen.blit(text_surface_time, (self.W*self.size*1.5, self.H*self.size*(0.618)))
 			each_tile.draw_rect(self.screen)
 

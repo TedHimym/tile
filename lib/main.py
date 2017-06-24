@@ -3,11 +3,11 @@ import pygame
 from pygame.locals import *
 
 class main():
-	def __init__(self):
+	def __init__(self, screen):
 		self.size = 40
 		self.W = 12
 		self.H = 20
-		self.screen = pygame.display.set_mode((self.W*self.size, self.H*self.size))
+		self.screen = screen
 		self.board = board.board(self.screen, self.size, self.W, self.H)
 		self.clock = pygame.time.Clock()
 		self.count = 0
@@ -15,7 +15,7 @@ class main():
 	def run(self):
 		self.board.new()
 		while True:
-			self.clock.tick(30)
+			self.clock.tick(60)
 			if self.count == 30:
 				self.count = 0
 				self.board.change_pos('down')
@@ -25,18 +25,19 @@ class main():
 			for event in pygame.event.get():
 				if event.type == KEYDOWN:
 					if event.key == K_q:
+						self.board.tile_list = []
 						return
 					elif event.key == K_LEFT:
 						self.board.change_pos('left')
 					elif event.key == K_RIGHT:
 						self.board.change_pos('right')
 					elif event.key == K_DOWN:
-						self.board.change_pos('down')
+						self.board.change_pos('down_drect')
 					elif event.key == K_SPACE:
 						self.board.change_poise()
 				elif event.type == QUIT:
 					return
-			self.board.draw_rect()
+			self.board.draw_rect(self.count)
 			pygame.display.update()
 			self.count += 1
 			pass

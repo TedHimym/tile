@@ -5,7 +5,7 @@ try:
 except:
 	pass
 
-import game
+from game import game
 game.run()
 
 

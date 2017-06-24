@@ -1,8 +1,9 @@
 import pygame
 from pygame.locals import *
+import util
 
 class tile(object):
-	def __init__(self, pos, W=12, H=20, color=(60,60,90), size = 40):
+	def __init__(self, pos, W=12, H=20, size = 40, color=(60,60,90)):
 		self.color = color;
 		self.size = size;
 		self.pos = pos;
@@ -24,15 +25,17 @@ class tile(object):
 	def set_pos_local(self, set_pos):
 		self.pos = set_pos
 	def draw_rect(self, screen):
-		rect = Rect(self.pos[0]*self.size, self.pos[1]*self.size, self.size, self.size)
-		pygame.draw.rect(screen, self.color, rect)
+		screen.blit(util.tile_image, (self.pos[0]*self.size, self.pos[1]*self.size))
+		# rect = Rect(self.pos[0]*self.size, self.pos[1]*self.size, self.size, self.size)
+		# pygame.draw.rect(screen, self.color, rect)
 
 class shape(object):
-	def __init__(self, W=12, H=20):
+	def __init__(self, W, H, size):
 		self.tile_list = []
 		self.board_size_H = H
 		self.board_size_W = W
-
+		self.size = size
+		
 	def left_and_right(self, commond):
 		can_t_move = False
 		if commond == 'left':
@@ -66,11 +69,11 @@ class shape(object):
 		pass
 
 class line(shape):
-	def __init__(self, start_pos, W=12, H=20):
-		shape.__init__(self, W, H)
+	def __init__(self, start_pos, W, H, size):
+		shape.__init__(self, W, H, size)
 		self.cur_poise = 0
 		for i in range(4):
-			base_tile = tile([start_pos[0]+i, start_pos[1]], W, H)
+			base_tile = tile([start_pos[0]+i, start_pos[1]], W, H, self.size)
 			self.tile_list.append(base_tile)
 		self.centor_tile = self.tile_list[2]
 
@@ -97,11 +100,11 @@ class line(shape):
 		return can_t_move
 
 class rect(shape):
-	def __init__(self, start_pos, W=12, H=20):
-		shape.__init__(self, W, H)
+	def __init__(self, start_pos, W, H, size):
+		shape.__init__(self, W, H, size)
 		for i in range(2):
 			for j in range(2):
-				base_tile = tile([start_pos[0]+i, start_pos[1]+j], W, H)
+				base_tile = tile([start_pos[0]+i, start_pos[1]+j], W, H, self.size)
 				self.tile_list.append(base_tile)
 		self.centor_tile = self.tile_list[2]
 
@@ -110,14 +113,14 @@ class rect(shape):
 		return can_t_move
 		
 class line_with_point_down(shape):
-	def __init__(self, start_pos, W=12, H=20):
-		shape.__init__(self, W, H)
+	def __init__(self, start_pos, W, H, size):
+		shape.__init__(self, W, H, size)
 		self.cur_poise = 0
 		for i in range(3):
-			base_tile = tile([start_pos[0]+i, start_pos[1]], W, H)
+			base_tile = tile([start_pos[0]+i, start_pos[1]], W, H, self.size)
 			self.tile_list.append(base_tile)
 		self.centor_tile = self.tile_list[0]
-		self.tile_list.append(tile([start_pos[0], start_pos[1]+1], W, H))
+		self.tile_list.append(tile([start_pos[0], start_pos[1]+1], W, H, self.size))
 
 	def change_poise(self, s='+1'):
 		can_t_move = False
@@ -152,14 +155,14 @@ class line_with_point_down(shape):
 		return can_t_move
 
 class line_with_point_up(shape):
-	def __init__(self, start_pos, W=12, H=20):
-		shape.__init__(self, W, H)
+	def __init__(self, start_pos, W, H, size):
+		shape.__init__(self, W, H, size)
 		self.cur_poise = 0
 		for i in range(3):
-			base_tile = tile([start_pos[0]+i, start_pos[1]], W, H)
+			base_tile = tile([start_pos[0]+i, start_pos[1]], W, H, self.size)
 			self.tile_list.append(base_tile)
 		self.centor_tile = self.tile_list[0]
-		self.tile_list.append(tile([start_pos[0], start_pos[1]-1], W, H))
+		self.tile_list.append(tile([start_pos[0], start_pos[1]-1], W, H, self.size))
 
 	def change_poise(self, s='+1'):
 		can_t_move = False
