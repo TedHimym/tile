@@ -6,13 +6,13 @@ from menu import menu
 
 class game(object):
 	def __init__(self):
-		self.W = 12
-		self.H = 20
+		self.W = 9
+		self.H = 16
 		self.size = 40
 		self.screen = pygame.display.set_mode((self.W*self.size*2, self.H*self.size))
 		self.clock = pygame.time.Clock()
-		self.main = main(self.screen)
-		self.menu = menu(self.screen)
+		self.main = main(self.screen, self.size, self.W, self.H)
+		self.menu = menu(self.screen, self.size, self.W, self.H)
 		self.menu_flage = True
 
 	def run(self):
@@ -23,9 +23,10 @@ class game(object):
 				if event.type == MOUSEBUTTONDOWN:
 					if (self.menu_flage and self.menu.click_button(event.pos)):
 						self.main.run()
+
 				else:
 					pass
-			self.menu.draw(self.screen)
+			self.menu.Begin(self.screen)
 			pygame.display.update()
 
 if __name__ == '__main__':

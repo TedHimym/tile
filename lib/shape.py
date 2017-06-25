@@ -3,7 +3,7 @@ from pygame.locals import *
 import util
 
 class tile(object):
-	def __init__(self, pos, W=12, H=20, size = 40, color=(60,60,90)):
+	def __init__(self, pos, W, H, size, color=(60,60,90)):
 		self.color = color;
 		self.size = size;
 		self.pos = pos;
@@ -191,7 +191,7 @@ class line_with_point_up(shape):
 		can_t_move = self.check()
 		return can_t_move
 
-class Z_shape(shape):
+class Z_shape_right(shape):
 	def __init__(self, start_pos, W, H, size):
 		shape.__init__(self, W, H, size)
 		self.cur_poise = 0
@@ -201,7 +201,7 @@ class Z_shape(shape):
 				self.tile_list.append(base_tile)
 		self.centor_tile = self.tile_list[1]
 
-	def change_poise_right(self, s='+1'):
+	def change_poise(self, s='+1'):
 		can_t_move = False
 		self.cur_poise += int(s)
 		if self.cur_poise >= 2:
@@ -226,7 +226,7 @@ class Z_shape_left(shape):
 		self.cur_poise = 0
 		for i in range(2):
 			for j in range(2):
-				base_tile = tile([start_pos[0]+j+i, start_pos[1]+i], W, H, self.size)
+				base_tile = tile([start_pos[0]+j+i, start_pos[1]-i], W, H, self.size)
 				self.tile_list.append(base_tile)
 		self.centor_tile = self.tile_list[1]
 

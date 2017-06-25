@@ -13,13 +13,14 @@ class board(object):
 		self.grade = 0
 		self.size = size
 		self.act_shape = []
+		self.start_pos = [self.W/2-1, 0]
 		self.START = (100, 100)
 		self.screen = screen
 		self.tile_list = []
 		self.ground_flage = False
 		self.can_t_move = False
 		self.text = util.text(size=80)
-
+		self.is_over = False
 	def change_pos(self, commond):
 		can_t_move = False
 		not_hit = True
@@ -35,7 +36,6 @@ class board(object):
 						self.act_shape.up_one_step()
 						return
 				self.ground_flage = self.act_shape.fall_down_one_step(self.H)
-				print 'a'
 			self.check_row()
 			self.draw_rect(-1)
 
@@ -70,6 +70,9 @@ class board(object):
 			if each_tile not in act_tile_list:
 				not_act_tile_pos.append(each_tile.get_pos())
 				not_act_tile.append(each_tile)
+		for pos in not_act_tile_pos:
+			if pos[1] <= 0:
+				self.is_over = True
 		return not_act_tile_pos, not_act_tile
 
 	def check_row(self):
@@ -95,17 +98,17 @@ class board(object):
 	def new(self):
 		shape_num = random.randint(0, 4)
 		if shape_num == 0:
-			self.act_shape = shape.line([5,5], self.W, self.H, self.size)
+			self.act_shape = shape.line(self.start_pos, self.W, self.H, self.size)
 		elif shape_num == 1:
-			self.act_shape = shape.rect([5,5], self.W, self.H, self.size)
+			self.act_shape = shape.rect(self.start_pos, self.W, self.H, self.size)
 		elif shape_num == 2:
-			self.act_shape = shape.line_with_point_up([5,5], self.W, self.H, self.size)
+			self.act_shape = shape.line_with_point_up(self.start_pos, self.W, self.H, self.size)
 		elif shape_num == 3:
-			self.act_shape = shape.line_with_point_down([5,5], self.W, self.H, self.size)
+			self.act_shape = shape.line_with_point_down(self.start_pos, self.W, self.H, self.size)
 		elif shape_num == 4:
-			self.act_shape = shape.Z_shape_right([5, 5], self.W, self.H, self.size)
+			self.act_shape = shape.Z_shape_right(self.start_pos, self.W, self.H, self.size)
 		elif shape_num == 5:
-			self.act_shape = shape.Z_shape_left([5, 5], self.W, self.H, self.size)
+			self.act_shape = shape.Z_shape_left(self.start_pos, self.W, self.H, self.size)
 		self.add_tile()
 
 	def add_tile(self):

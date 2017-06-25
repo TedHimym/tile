@@ -1,12 +1,12 @@
 import board
 import pygame
 from pygame.locals import *
-
+ 
 class main():
-	def __init__(self, screen):
-		self.size = 40
-		self.W = 12
-		self.H = 20
+	def __init__(self, screen,size, W, H):
+		self.size = size
+		self.W = W
+		self.H = H
 		self.screen = screen
 		self.board = board.board(self.screen, self.size, self.W, self.H)
 		self.clock = pygame.time.Clock()
@@ -14,7 +14,7 @@ class main():
  
 	def run(self):
 		self.board.new()
-		while True:
+		while self.board.is_over != True:
 			self.clock.tick(60)
 			if self.count == 30:
 				self.count = 0
