@@ -68,6 +68,16 @@ class shape(object):
 	def fall_dwon(self):
 		pass
 
+	def check(self):
+		can_t_move = False
+		for tile in self.tile_list:
+			pos = tile.get_pos()
+			if pos[0]<0 or pos[0]>self.board_size_W:
+				can_t_move = True
+			if pos[1]<0 or pos[1]>self.board_size_H-1:
+				can_t_move = True
+		return can_t_move
+
 class line(shape):
 	def __init__(self, start_pos, W, H, size):
 		shape.__init__(self, W, H, size)
@@ -91,12 +101,7 @@ class line(shape):
 		if self.cur_poise == 1:
 			for i in range(-1, 3):
 				self.tile_list[i+1].set_pos_local([centor_pos[0], centor_pos[1]+i])
-		for tile in self.tile_list:
-			pos = tile.get_pos()
-			if pos[0]<0 or pos[0]>self.board_size_W:
-				can_t_move = True
-			if pos[1]<0 or pos[1]>self.board_size_H-1:
-				can_t_move = True
+		can_t_move = self.check()
 		return can_t_move
 
 class rect(shape):
@@ -146,12 +151,7 @@ class line_with_point_down(shape):
 			for i in range(3):
 				base_tile = self.tile_list[i].set_pos_local([centor_pos[0], centor_pos[1]-i])
 				self.tile_list[3].set_pos_local([centor_pos[0]+1, centor_pos[1]],)
-		for tile in self.tile_list:
-			pos = tile.get_pos()
-			if pos[0]<0 or pos[0]>self.board_size_W:
-				can_t_move = True
-			if pos[1]<0 or pos[1]>self.board_size_H-1:
-				can_t_move = True
+		can_t_move = self.check()
 		return can_t_move
 
 class line_with_point_up(shape):
@@ -188,10 +188,63 @@ class line_with_point_up(shape):
 			for i in range(3):
 				base_tile = self.tile_list[i].set_pos_local([centor_pos[0], centor_pos[1]-i])
 				self.tile_list[3].set_pos_local([centor_pos[0]-1, centor_pos[1]],)
-		for tile in self.tile_list:
-			pos = tile.get_pos()
-			if pos[0]<0 or pos[0]>self.board_size_W:
-				can_t_move = True
-			if pos[1]<0 or pos[1]>self.board_size_H-1:
-				can_t_move = True
+		can_t_move = self.check()
+		return can_t_move
+
+class Z_shape(shape):
+	def __init__(self, start_pos, W, H, size):
+		shape.__init__(self, W, H, size)
+		self.cur_poise = 0
+		for i in range(2):
+			for j in range(2):
+				base_tile = tile([start_pos[0]+j+i, start_pos[1]+i], W, H, self.size)
+				self.tile_list.append(base_tile)
+		self.centor_tile = self.tile_list[1]
+
+	def change_poise_right(self, s='+1'):
+		can_t_move = False
+		self.cur_poise += int(s)
+		if self.cur_poise >= 2:
+			self.cur_poise = 0
+		elif self.cur_poise <= -1:
+			self.cur_poise = 1
+		centor_pos = self.centor_tile.get_pos()
+		if self.cur_poise == 0:
+			for i in range(2):
+				for j in range(2):
+					self.tile_list[i*2+j].set_pos_local([centor_pos[0]+j+i-1, centor_pos[1]+i])
+		elif self.cur_poise == 1:
+			for i in range(2):
+				for j in range(2):
+					self.tile_list[i*2+j].set_pos_local([centor_pos[0]+i-1, centor_pos[1]-i-j+1])
+		can_t_move = self.check()
+		return can_t_move
+
+class Z_shape_left(shape):
+	def __init__(self, start_pos, W, H, size):
+		shape.__init__(self, W, H, size)
+		self.cur_poise = 0
+		for i in range(2):
+			for j in range(2):
+				base_tile = tile([start_pos[0]+j+i, start_pos[1]+i], W, H, self.size)
+				self.tile_list.append(base_tile)
+		self.centor_tile = self.tile_list[1]
+
+	def change_poise(self, s='+1'):
+		can_t_move = False
+		self.cur_poise += int(s)
+		if self.cur_poise >= 2:
+			self.cur_poise = 0
+		elif self.cur_poise <= -1:
+			self.cur_poise = 1
+		centor_pos = self.centor_tile.get_pos()
+		if self.cur_poise == 0:
+			for i in range(2):
+				for j in range(2):
+					self.tile_list[i*2+j].set_pos_local([centor_pos[0]+j+i-1, centor_pos[1]+i])
+		elif self.cur_poise == 1:
+			for i in range(2):
+				for j in range(2):
+					self.tile_list[i*2+j].set_pos_local([centor_pos[0]+i-1, centor_pos[1]-i-j+1])
+		can_t_move = self.check()
 		return can_t_move

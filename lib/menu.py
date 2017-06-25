@@ -8,6 +8,7 @@ class menu(object):
 		self.text = util.text(size=150)
 
 	def draw(self, screen):
+		screen.fill((255,255,255))
 		rect = Rect(0, 100, 40*12*2, 400)
 		pygame.draw.rect(self.screen, (20, 20, 20), rect)
 		text_surface = self.text.render("Begin!!!!!", True, (20, 50, 90))

@@ -37,6 +37,7 @@ class board(object):
 				self.ground_flage = self.act_shape.fall_down_one_step(self.H)
 				print 'a'
 			self.check_row()
+			self.draw_rect(-1)
 
 		for act_tile_each in self.act_shape.get_tile():
 			if (act_tile_each.get_pos() in unable_pos_list) or self.ground_flage or can_t_move:
@@ -92,7 +93,7 @@ class board(object):
 					if tile.get_pos()[1] <= i:
 						tile.set_pos('down')
 	def new(self):
-		shape_num = random.randint(0, 3)
+		shape_num = random.randint(0, 4)
 		if shape_num == 0:
 			self.act_shape = shape.line([5,5], self.W, self.H, self.size)
 		elif shape_num == 1:
@@ -101,6 +102,10 @@ class board(object):
 			self.act_shape = shape.line_with_point_up([5,5], self.W, self.H, self.size)
 		elif shape_num == 3:
 			self.act_shape = shape.line_with_point_down([5,5], self.W, self.H, self.size)
+		elif shape_num == 4:
+			self.act_shape = shape.Z_shape_right([5, 5], self.W, self.H, self.size)
+		elif shape_num == 5:
+			self.act_shape = shape.Z_shape_left([5, 5], self.W, self.H, self.size)
 		self.add_tile()
 
 	def add_tile(self):
@@ -118,9 +123,11 @@ class board(object):
 
 	def draw_rect(self, count):
 		for each_tile in self.tile_list:
-			text_surface_grade = self.text.render(str(self.grade), True, (20, 50, 90))
-			text_surface_time = self.text.render(str(count), True, (20, 50, 90))
-			self.screen.blit(text_surface_grade, (self.W*self.size*1.5, self.H*self.size*(0.382)))
-			self.screen.blit(text_surface_time, (self.W*self.size*1.5, self.H*self.size*(0.618)))
 			each_tile.draw_rect(self.screen)
+		if count < 0:
+			return
+		text_surface_grade = self.text.render(str(self.grade), True, (20, 50, 90))
+		text_surface_time = self.text.render(str(count), True, (20, 50, 90))
+		self.screen.blit(text_surface_grade, (self.W*self.size*1.5, self.H*self.size*(0.382)))
+		self.screen.blit(text_surface_time, (self.W*self.size*1.5, self.H*self.size*(0.618)))
 
